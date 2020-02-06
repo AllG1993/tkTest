@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import Combobox
+import db_connection
 
 # отрисовываем окно и название окна
 window = Tk()
@@ -28,13 +29,8 @@ def click():
     user_data = 'Добавлена гарнитура {}'.format(user_text_sn.get()) + ' c РМ№{}.'.format(user_text_rm.get())
     str(enter_data)
     enter_data.configure(text=user_data)
-    res()
-
-
-def res():
-    get_user_data = user_text_sn.get() + '\n' + user_text_rm.get() + '\n' + breakdown_list.get()
-    str(get_user_data)
-    print(get_user_data)
+    result_user_data()
+    insert_data()
 
 
 btn_sn = Button(window, text='Добавить периферию', command=click)
@@ -61,6 +57,29 @@ breakdown_list['values'] = ('Укажите из списка',
                             'Повряждение кабеля')
 breakdown_list.current(0)
 breakdown_list.grid(column=1, row=3)
+
+
+def result_user_data():
+    get_user_text_sn = user_text_sn.get()
+    get_user_text_rm = user_text_rm.get()
+    get_breakdown_list = breakdown_list.get()
+    get_user_data_collection = (get_user_text_sn, get_user_text_rm, get_breakdown_list)
+    print(get_user_data_collection)
+
+
+cur = db_connection.cursor
+conn = db_connection.conn
+
+
+def insert_data():
+    cur.execute(
+        "INSERT INTO defective_headset (serial_number, workplace, malfunction) VALUES (%s, %s, %s)",
+        (user_text_sn.get(), user_text_rm.get(), breakdown_list.get())
+    )
+
+    conn.commit()
+    print('Данные записаны')
+    conn.close()
 
 
 window.mainloop()
