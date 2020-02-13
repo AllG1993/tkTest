@@ -14,9 +14,10 @@ main_menu.add_command(label='Параметры сервера')
 menu.add_cascade(label='Меню', menu=main_menu)
 root.config(menu=menu)
 
+
 # текст "Введите данные"
-enter_data = Label(text='Введите данные')
-enter_data.grid(column=1, row=0)
+lbl_enter_data = Label(text='Введите данные')
+lbl_enter_data.grid(column=1, row=0)
 
 # лейбл серийный номер
 sn = Label(root, text='Введите С/Н гарнитуры: ')
@@ -34,8 +35,8 @@ rm.grid(column=0, row=3, sticky=E)
 # меняем текст при нажатии кнопки
 def click():
     user_data = 'Добавлена гарнитура {}'.format(user_text_sn.get()) + ' c РМ№{}.'.format(user_text_rm.get())
-    str(enter_data)
-    enter_data.configure(text=user_data)
+    str(lbl_enter_data)
+    lbl_enter_data.configure(text=user_data)
     insert_data()
 
 
@@ -70,9 +71,30 @@ cur = db_connection.cursor
 conn = db_connection.conn
 
 
+def show_data():
+
+    cur.execute("SELECT id, serial_number, workplace, malfunction from test_1")
+
+    rows = cur.fetchall()
+    for row in rows:
+        id = row[0]
+        serial_number = row[1]
+        workplace = row[2]
+        malfunction = row[3]
+
+    label_id = Label(root, text=id)
+    label_id.grid(column=3, row=7)
+
+    print("Operation done successfully")
+
+
+show_data_button = Button(text='Вывести данные', command=show_data)
+show_data_button.grid(column=1, row=5)
+
+
 def insert_data():
     cur.execute(
-        "INSERT INTO defective_headset (serial_number, workplace, malfunction) VALUES (%s, %s, %s)",
+        "INSERT INTO test_1 (serial_number, workplace, malfunction) VALUES (%s, %s, %s)",
         (user_text_sn.get(), user_text_rm.get(), breakdown_list.get())
     )
 
